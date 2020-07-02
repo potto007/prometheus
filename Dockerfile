@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG OS="linux"
 FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
-LABEL maintainer="The Prometheus Authors <prometheus-developers@googlegroups.com>"
+LABEL maintainer="Paul Otto <paul@ottoops.com>"
 
 ARG ARCH="amd64"
 ARG OS="linux"
@@ -18,12 +18,15 @@ RUN ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles
 RUN mkdir -p /prometheus && \
     chown -R nobody:nogroup etc/prometheus /prometheus
 
+ARG CONFIGFILE="/etc/prometheus/prometheus.yml"
+ENV CONFIG_FILE=$CONFIGFILE
+
 USER       nobody
 EXPOSE     9090
 VOLUME     [ "/prometheus" ]
 WORKDIR    /prometheus
 ENTRYPOINT [ "/bin/prometheus" ]
-CMD        [ "--config.file=/etc/prometheus/prometheus.yml", \
+CMD        [ "--config.file=${CONFIG_FILE}", \
              "--storage.tsdb.path=/prometheus", \
              "--web.console.libraries=/usr/share/prometheus/console_libraries", \
              "--web.console.templates=/usr/share/prometheus/consoles" ]
